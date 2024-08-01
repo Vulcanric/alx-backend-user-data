@@ -6,7 +6,7 @@ from typing import List
 
 
 def filter_datum(fields: List[str], redaction: str, message: str, separator: str) -> str:
+    """ Filters a log message, obfuscating PII fields """
     for field in fields:
-        target_substr, obfuscated = f'{field}=\S+?{separator}',f'{field}={redaction}{separator}'
-        message = re.sub(target_substr, obfuscated, message)
+        message = re.sub(f'{field}=\S+?{separator}', f'{field}={redaction}{separator}', message)
     return message
