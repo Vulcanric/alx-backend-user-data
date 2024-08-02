@@ -74,5 +74,5 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format log records, obfuscating PII fields"""
-        log = super().format(record).replace(';', '; ')
+        log = super().format(record).replace(';', '; ').rstrip()
         return filter_datum(self.fields, self.REDACTION, log, self.SEPARATOR)
