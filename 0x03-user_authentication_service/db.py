@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
 from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.orm.exc import InvalidRequestError
-from typing import Tuple, Dict
+from sqlalchemy.orm.exc import NoResultFound
+from typing import (Tuple, Dict, Optional)
 
 from user import Base
 from user import User
@@ -24,7 +24,7 @@ class DB:
         self._engine = create_engine('sqlite:///a.db', echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
-        self.__session = None
+        self.__session: Optional[Session] = None
 
     @property
     def _session(self) -> Session:
@@ -38,8 +38,7 @@ class DB:
     def add_user(self, email: str, hashed_password: str) -> User:
         """ Creates a user object, adds it to the database and returns it.
         """
-        user = User()
-        user.email, user.hashed_password = email, hashed_password
+        user = User(email=email, hashed_password=hashed_password)
         self._session.add(user)  # Property function, don't have to call it
         self._session.commit()  # Save user to database
         return user
