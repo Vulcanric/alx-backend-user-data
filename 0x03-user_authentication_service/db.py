@@ -44,7 +44,7 @@ class DB:
         return user
 
     def find_user_by(self, **attributes: Dict) -> User:
-        """ Find a user identified by attributes @kwargs
+        """ Find a user identified by @attributes kwargs
         """
         user_attrs = {
                 'id': User.id,
@@ -56,9 +56,9 @@ class DB:
 
         query = self._session.query(User)  # Query the users table
 
-        for attr_name, value in attributes.items():  # Filter by inputed value
+        for attr, value in attributes.items():  # Filter by inputed value
             try:
-                query = query.filter(user_attrs[attr_name] == value)
+                query = query.filter(user_attrs[attr] == value)
             except KeyError:  # Invalid attribute name, not found in User
                 raise InvalidRequestError
 
@@ -67,3 +67,15 @@ class DB:
             raise NoResultFound
 
         return result
+
+    def update_user(self, user_id: int, **attributes: Dict) -> None:
+        """ Updates a user's @attributes, identified by @user_id
+        """
+        try:
+            user = self.find_user_by(id=user_id)
+        except InvalidRequestError:  # Attribute is not a user attribute
+            raise ValueError
+
+        for attr, value in attributes.items():
+            setattr(user, attr, value)
+        self._session.commit()  # Save updated user to database
