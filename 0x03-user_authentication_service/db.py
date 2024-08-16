@@ -6,7 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
-from sqlalchemy.exc import (NoResultFound, InvalidRequestError)
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import InvalidRequestError
 from typing import Tuple, Dict
 
 from user import Base
@@ -71,10 +72,14 @@ class DB:
     def update_user(self, user_id: int, **attributes: Dict) -> None:
         """ Updates a user's @attributes, identified by @user_id
         """
-        try:
-            user = self.find_user_by(id=user_id)
-        except InvalidRequestError:  # Attribute is not a user attribute
-            raise ValueError
+        for attr in attributes.keys():
+            if not attr in (
+                    "email", "hashed_password",
+                    "session_id", "reset_token"
+                ):
+                raise ValueError
+
+        user = self.find_user_by(id=user_id)
 
         for attr, value in attributes.items():
             setattr(user, attr, value)
