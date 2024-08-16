@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
 from sqlalchemy.exc import (NoResultFound, InvalidRequestError)
-
 from typing import Tuple, Dict
 
 from user import Base
@@ -21,7 +20,7 @@ class DB:
     def __init__(self) -> None:
         """ Initialize a new DB instance
         """
-        self._engine = create_engine('sqlite:///a.db', echo=True)
+        self._engine = create_engine('sqlite:///a.db', echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -45,7 +44,7 @@ class DB:
         return user
 
     def find_user_by(self, **attributes: Dict) -> User:
-        """ Find users identified by attributes @kwargs
+        """ Find a user identified by attributes @kwargs
         """
         user_attrs = {
                 'id': User.id,
