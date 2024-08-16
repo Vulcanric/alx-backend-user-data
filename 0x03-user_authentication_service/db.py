@@ -6,6 +6,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
+from sqlalchemy.exc import (NoResultFound, InvalidRequestError)
+
+from typing import Tuple, Dict
+
 from user import Base
 from user import User
 
@@ -39,3 +43,28 @@ class DB:
         self._session.add(user)  # Property function, don't have to call it
         self._session.commit()  # Save user to database
         return user
+
+    def find_user_by(self, **attributes: Dict) -> Tuple:
+        """ Find users identified by attributes @kwargs
+        """
+        user_attrs = {
+                'id': User.id,
+                'email': User.email,
+                'hashed_password': User.hashed_password,
+                'session_id': User.session_id,
+                'reset_token': User.reset_token
+            }
+
+        query = self._session.query(User)  # Query the users table
+
+        for attr_name, value in attributes.items():  # Filter by inputed value
+            try:
+                query = query.filter(user_attrs[attr_name] == value)
+            except KeyError:  # Invalid attribute name, not found in User
+                raise InvalidRequestError
+
+        result = query.first()
+        if not result:
+            raise NoResultFound
+
+        return result
