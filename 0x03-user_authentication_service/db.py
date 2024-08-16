@@ -72,10 +72,10 @@ class DB:
         """ Updates a user's @attributes, identified by @user_id
         """
         for attr in attributes.keys():
-            if not attr in (
+            if attr not in (
                     "email", "hashed_password",
                     "session_id", "reset_token"
-                ):
+                    ):
                 raise ValueError
 
         user = self.find_user_by(id=user_id)
