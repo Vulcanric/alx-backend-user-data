@@ -10,7 +10,7 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
 
 
-def _hash_password(passwd: str) -> bytes:
+def _hash_password(password: str) -> bytes:
     """ Encrypts a password string and returns it
     """
     salt = bcrypt.gensalt()
