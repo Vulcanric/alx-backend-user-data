@@ -2,8 +2,9 @@
 """ Authentication module
 """
 import bcrypt
-from db import DB
+import uuid
 
+from db import DB
 from user import User
 
 from sqlalchemy.exc import InvalidRequestError
@@ -13,8 +14,13 @@ from sqlalchemy.orm.exc import NoResultFound
 def _hash_password(password: str) -> bytes:
     """ Encrypts a password string and returns it
     """
-    salt = bcrypt.gensalt()
-    return bcrypt.hashpw(password.encode(), salt)
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+
+
+def _generate_uuid() -> str:
+    """ Generates a string representation of universally unique id
+    """
+    return uuid.uuid4().__str__()
 
 
 class Auth:
@@ -38,5 +44,15 @@ class Auth:
             raise ValueError(f'User {email} already exists')
         except NoResultFound:  # User can be added
             user = self._db.add_user(email, _hash_password(password))
-
         return user
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """ Validates a user's login given user email and password
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            if bcrypt.checkpw(password.encode(), user.hashed_password):
+                return True
+            return False
+        except NoResultFound:
+            return False
