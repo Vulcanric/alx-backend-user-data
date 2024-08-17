@@ -68,7 +68,7 @@ class DB:
 
         return result
 
-    def update_user(self, user_id: int, **attributes: Dict) -> None:
+    def update_user(self, user_id: int, **attributes) -> None:
         """ Updates a user's @attributes, identified by @user_id
         """
         for attr in attributes.keys():
