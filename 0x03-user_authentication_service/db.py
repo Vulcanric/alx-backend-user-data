@@ -43,7 +43,7 @@ class DB:
         self._session.commit()  # Save user to database
         return user
 
-    def find_user_by(self, **attributes: Dict) -> User:
+    def find_user_by(self, **attributes) -> User:
         """ Find a user identified by @attributes kwargs
         """
         user_attrs = {
