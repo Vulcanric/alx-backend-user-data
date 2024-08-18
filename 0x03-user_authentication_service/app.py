@@ -46,13 +46,13 @@ def login():
         session_id = AUTH.create_session(user_email)
         payload = {"email": user_email, "message": "logged in"}
         response = make_response(jsonify(payload))
-        response.set_cookie("Set-Cookie", f"session_id={session_id}")
+        response.set_cookie("session_id", session_id)
     else:
         abort(401)  # Unauthorized: access denied
     return response
 
 
-@app.route("/sessions", methods=["DELETE", "POST"])
+@app.route("/sessions", methods=["DELETE"])
 def logout():
     """ Destroys user's session and redirects user to home ('/') page
     """
