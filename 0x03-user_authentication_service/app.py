@@ -12,7 +12,7 @@ AUTH = Auth()
 
 
 @app.route("/")
-def index():
+def home():
     """ Respond with a JSON data """
     return jsonify({"message": "Bienvenue"})
 
@@ -52,7 +52,7 @@ def login():
     return response
 
 
-@app.route("/sessions", methods=["DELETE"])
+@app.route("/sessions", methods=["DELETE", "POST"])
 def logout():
     """ Destroys user's session and redirects user to home ('/') page
     """
@@ -62,7 +62,7 @@ def logout():
         AUTH.destroy_session(user.id)
     else:
         abort(403)  # Forbidden
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 
 if __name__ == "__main__":
