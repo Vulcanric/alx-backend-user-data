@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """ App module to test simple user authentication application
 """
-from flask import (Flask, jsonify, request, make_response, abort)
+from flask import (
+        Flask, jsonify, request, make_response,
+        abort, redirect, url_for
+        )
 from auth import Auth
 
 app = Flask(__name__)
@@ -45,8 +48,20 @@ def login():
         response = make_response(jsonify(payload))
         response.set_cookie("Set-Cookie", f"session_id={session_id}")
     else:
-        abort(401)
+        abort(401)  # Unauthorized: access denied
     return response
+
+@app.route("/sessions", methods=["DELETE"])
+def logout():
+    """ Destroys user's session and redirects user to home ('/') page
+    """
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        AUTH.destroy_session(user.id)
+    else:
+        abort(403)  # Forbidden
+    return redirect(url_for('index'))
 
 
 if __name__ == "__main__":
