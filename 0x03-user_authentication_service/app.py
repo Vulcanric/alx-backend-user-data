@@ -51,6 +51,7 @@ def login():
         abort(401)  # Unauthorized: access denied
     return response
 
+
 @app.route("/sessions", methods=["DELETE"])
 def logout():
     """ Destroys user's session and redirects user to home ('/') page
