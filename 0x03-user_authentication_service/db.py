@@ -38,11 +38,7 @@ class DB:
     def add_user(self, email: str, hashed_password: str) -> User:
         """ Creates a user object, adds it to the database and returns it.
         """
-        user = User(
-                email=email,
-                hashed_password=hashed_password,
-                session_id=""
-            )
+        user = User(email=email, hashed_password=hashed_password)
         self._session.add(user)  # Property function, don't have to call it
         self._session.commit()  # Save user to database
         return user
