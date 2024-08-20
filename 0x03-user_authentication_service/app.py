@@ -19,7 +19,7 @@ def home():
 
 @app.route("/users", methods=["POST"])
 def users():
-    """ Register a new user """
+    """ Registers a new user """
     user_email = request.form["email"]
     user_password = request.form["password"]
     try:
@@ -58,7 +58,7 @@ def logout():
     """
     session_id = request.cookies.get('session_id')
     user = AUTH.get_user_from_session_id(session_id)
-    if user:
+    if user is not None:
         AUTH.destroy_session(user.id)
     else:
         abort(403)  # Forbidden
