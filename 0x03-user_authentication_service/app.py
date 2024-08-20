@@ -31,7 +31,7 @@ def users():
     except ValueError:  # User is already registered
         response = (
                 jsonify({"message": "email already registered"}),
-                400  # Bad request
+                400  # Bad request: user already registered
             )
     return response
 
@@ -57,13 +57,11 @@ def logout():
     """ Destroys user's session and redirects user to home ('/') page
     """
     session_id = request.cookies.get('session_id')
-    if session_id == None:
-        session_id = ""  # To avoid retrieving user's with empty session field
     user = AUTH.get_user_from_session_id(session_id)
     if user:
         AUTH.destroy_session(user.id)
     else:
-        abort(403)  # Forbidden
+        abort(403)  # Forbidden: invalid session id
     return redirect(url_for('home'))
 
 
@@ -73,10 +71,10 @@ def profile():
     """
     session_id = request.cookies.get('session_id')
     user = AUTH.get_user_from_session_id(session_id)
-    if user is not None:
+    if user:
         payload = {"email": user.email}
     else:
-        abort(403)  # Forbidden
+        abort(403)  # Forbidden: user not registered
     return jsonify(payload)
 
 
@@ -87,11 +85,26 @@ def get_reset_password_token():
     user_email = request.form['email']
     try:
         reset_token = AUTH.get_reset_password_token(user_email)
-    except ValueError:  # Email not registered
-        abort(403)  # Forbidden user
+    except ValueError:
+        abort(403)  # Forbidden: user not registered
     else:  # Email is registered
         payload = {"email": user_email, "reset_token": reset_token}
     return jsonify(payload)
+
+
+@app.route("/reset_password", methods=["PUT"])
+def update_password():
+    """ Updates a user's password
+    """
+    user_email = request.form['email']
+    reset_token = request.form['reset_token']
+    new_password = request.form['new_password']
+    try:
+        AUTH.update_password(reset_token, new_password)
+    except ValueError:
+        abort(403)  # Forbidden: Invalid token
+    else:
+        payload = {"email": user_email, "message": "Password updated"}
 
 
 if __name__ == "__main__":
