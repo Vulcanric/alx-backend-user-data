@@ -103,7 +103,7 @@ class Auth:
         """ Updates a users password
         """
         if reset_token is None:
-            reset_token = "" # Avoid retrieving user's with empty token field
+            reset_token = ""  # Avoid retrieving user's with empty token field
         try:
             user = self._db.find_user_by(reset_token=reset_token)
         except NoResultFound:
