@@ -25,7 +25,8 @@ def _generate_uuid() -> str:
 
 
 class Auth:
-    """ Auth class to interact with the authentication database
+    """ Authentication class proxying the DB model to authenticate users
+    before performing CRUD operations on them.
     """
 
     def __init__(self):
@@ -34,7 +35,7 @@ class Auth:
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> User:
-        """ Registers a user given their email address and password
+        """ Registers a new user given their email address and password
           - If a user with that same email exists, it raises a exception
                 ValueError: User <email> already exists
           - Otherwise it hashes the password and save the user to the database
@@ -44,7 +45,7 @@ class Auth:
             user = self._db.find_user_by(email=email)
             raise ValueError(f'User {email} already exists')
         except NoResultFound:  # User can be added
-            user = self._db.add_user(email, _hash_password(password))
+            user = self._db.add_user(email, _hash_password(password), )
         return user
 
     def valid_login(self, email: str, password: str) -> bool:
@@ -75,9 +76,9 @@ class Auth:
         """
         try:
             user = self._db.find_user_by(session_id=session_id)
-            return user
         except NoResultFound:
             return None
+        return user
 
     def destroy_session(self, user_id: int) -> None:
         """ Destroys a user's session, or rather logs out the user
