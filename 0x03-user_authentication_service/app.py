@@ -88,7 +88,7 @@ def get_reset_password_token():
     try:
         reset_token = AUTH.get_reset_password_token(user_email)
     except ValueError:  # Email not registered
-        abort(403)  # Forbidden
+        abort(403)  # Forbidden user
     else:  # Email is registered
         payload = {"email": user_email, "reset_token": reset_token}
     return jsonify(payload)
