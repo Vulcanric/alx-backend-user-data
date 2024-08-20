@@ -105,6 +105,7 @@ def update_password():
         abort(403)  # Forbidden: Invalid token
     else:
         payload = {"email": user_email, "message": "Password updated"}
+    return jsonify(payload)
 
 
 if __name__ == "__main__":
